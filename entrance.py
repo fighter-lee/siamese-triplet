@@ -6,9 +6,16 @@ from torchvision import transforms
 
 from common import extract_embeddings, plot_embeddings
 from datasets import SiameseMNIST
+from resnet import resnet50
 from trainer import fit
 from datasets import TripletMNIST
+from networks import EmbeddingNet, SiameseNet, TripletNet
+from losses import ContrastiveLoss, TripletLoss
 
+
+def getEmbeddingNet():
+    # return EmbeddingNet()
+    return resnet50(2)
 
 def siameseTest():
     # Step 1
@@ -22,11 +29,8 @@ def siameseTest():
                                                       **kwargs)
 
     # Set up the network and training parameters
-    from networks import EmbeddingNet, SiameseNet
-    from losses import ContrastiveLoss
-
     # Step 2
-    embedding_net = EmbeddingNet()
+    embedding_net = getEmbeddingNet()
     # Step 3
     model = SiameseNet(embedding_net)
     if cuda:
@@ -58,12 +62,8 @@ def tripletTest():
     triplet_test_loader = torch.utils.data.DataLoader(triplet_test_dataset, batch_size=batch_size, shuffle=False,
                                                       **kwargs)
 
-    # Set up the network and training parameters
-    from networks import EmbeddingNet, TripletNet
-    from losses import TripletLoss
-
     margin = 1.
-    embedding_net = EmbeddingNet()
+    embedding_net = getEmbeddingNet()
     model = TripletNet(embedding_net)
     if cuda:
         model.cuda()
